@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import subprocess
+import sys
 from pathlib import Path
 
 from rf_log_mcp.server import app as app_module
@@ -53,7 +54,7 @@ def test_logging_uses_stderr() -> None:
         "logging.getLogger('rf_log_mcp').info('hello from logger')"
     )
     completed = subprocess.run(
-        ["uv", "run", "python", "-c", command],
+        [sys.executable, "-c", command],
         cwd=str(Path(__file__).resolve().parents[1]),
         capture_output=True,
         text=True,

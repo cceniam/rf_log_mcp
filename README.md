@@ -6,7 +6,7 @@
 
 支持输入：
 
-- `output.xml`：Robot / Rebot 6.1.1
+- `output.xml`：Robot / Rebot 6.0.x / 6.1+ / 7.x
 - `output.json`：Robot / Rebot 7.2+
 
 暴露的 MCP 能力：

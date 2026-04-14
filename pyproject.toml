@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rf-log-mcp"
 version = "0.1.0"
-description = "MCP server for Robot Framework 6.1.1 output.xml analysis."
+description = "MCP server for Robot Framework output.xml and output.json analysis."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

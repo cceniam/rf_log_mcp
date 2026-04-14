@@ -171,7 +171,7 @@ SERVICE = _service()
 mcp = FastMCP(
     name="rf-log-mcp",
     instructions=(
-        "Inspect Robot Framework XML and RF 7.2+ JSON result files "
+        "Inspect Robot Framework XML (schema 3/4/5) and RF 7.2+ JSON result files "
         "with minimal evidence views."
     ),
 )

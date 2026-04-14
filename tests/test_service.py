@@ -19,6 +19,24 @@ def test_parse_result_is_cached(service: RfLogService) -> None:
     assert second["cached"] is True
 
 
+def test_parse_result_accepts_robot_602_xml(service: RfLogService) -> None:
+    parsed = _parse(service, "single_failure_602.xml")
+    assert parsed["ok"] is True
+    assert parsed["source_format"] == "xml"
+    assert parsed["input_profile"] == "rf-output-xml"
+    assert parsed["schemaversion"] == 3
+    assert str(parsed["generator"]).startswith("Robot 6.0.2")
+
+
+def test_parse_result_accepts_robot_74_xml(service: RfLogService) -> None:
+    parsed = _parse(service, "single_failure_74.xml")
+    assert parsed["ok"] is True
+    assert parsed["source_format"] == "xml"
+    assert parsed["input_profile"] == "rf-output-xml"
+    assert parsed["schemaversion"] == 5
+    assert str(parsed["generator"]).startswith("Robot 7.4.2")
+
+
 def test_parse_result_is_cached_for_json(service: RfLogService) -> None:
     first = _parse(service, "single_failure_72.json")
     second = _parse(service, "single_failure_72.json")
