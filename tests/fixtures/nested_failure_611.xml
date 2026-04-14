@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 6.1.1 (Python 3.14.0 on win32)" generated="20260330 18:12:56.712" rpa="false" schemaversion="4">
+<suite id="s1" name="Nested Failure" source="D:\project\rf_log_mcp\tests\fixture_sources\nested_failure.robot">
+<test id="s1-t1" name="Nested Failure" line="11">
+<kw name="Outer Step">
+<kw name="Log" library="BuiltIn">
+<arg>entering outer</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:12:56.731" level="INFO">entering outer</msg>
+<status status="PASS" starttime="20260330 18:12:56.731" endtime="20260330 18:12:56.731"/>
+</kw>
+<kw name="Inner Step">
+<kw name="Log" library="BuiltIn">
+<arg>before failure</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:12:56.732" level="INFO">before failure</msg>
+<status status="PASS" starttime="20260330 18:12:56.732" endtime="20260330 18:12:56.732"/>
+</kw>
+<kw name="Fail" library="BuiltIn">
+<arg>Nested keyword failure</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<msg timestamp="20260330 18:12:56.732" level="FAIL">Nested keyword failure</msg>
+<status status="FAIL" starttime="20260330 18:12:56.732" endtime="20260330 18:12:56.732"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:12:56.731" endtime="20260330 18:12:56.732"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:12:56.731" endtime="20260330 18:12:56.732"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:12:56.731" endtime="20260330 18:12:56.732">Nested keyword failure</status>
+</test>
+<status status="FAIL" starttime="20260330 18:12:56.714" endtime="20260330 18:12:56.732"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="1" skip="0" id="s1" name="Nested Failure">Nested Failure</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

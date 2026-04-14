@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rf-log-mcp"
+version = "0.1.0"
+description = "MCP server for Robot Framework 6.1.1 output.xml analysis."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.20.0,<2",
+    "pydantic>=2.11.0,<3",
+    "robotframework>=7.2,<8",
+]
+
+[project.scripts]
+rf-log-mcp = "rf_log_mcp.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0,<9",
+    "ruff>=0.12.0,<0.13",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rf_log_mcp"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

@@ -1,0 +1,12 @@
+.venv/
+.pytest_cache/
+.ruff_cache/
+.idea/
+.vscode/
+.omx/
+.rf_log_mcp/
+dist/
+src/rf_log_mcp/.rf_log_mcp/
+tests/.rf_log_mcp/
+__pycache__/
+*.py[cod]

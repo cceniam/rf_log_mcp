@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 6.1.1 (Python 3.14.0 on win32)" generated="20260330 18:13:40.109" rpa="false" schemaversion="4">
+<suite id="s1" name="Errors And Long" source="D:\project\rf_log_mcp\tests\fixture_sources\errors_and_long.robot">
+<test id="s1-t1" name="Long Failure" line="10">
+<kw name="Log" library="BuiltIn">
+<arg>collected line one</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line one</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line two</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line two</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line three</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line three</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line four</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line four</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line five</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line five</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line six</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.130" level="INFO">collected line six</msg>
+<status status="PASS" starttime="20260330 18:13:40.130" endtime="20260330 18:13:40.130"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line seven</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line seven</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line eight</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line eight</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line nine</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line nine</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line ten</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line ten</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line eleven</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line eleven</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Log" library="BuiltIn">
+<arg>collected line twelve</arg>
+<doc>Logs the given message with the given level.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">collected line twelve</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Create Long Failure">
+<kw name="Evaluate" library="BuiltIn">
+<var>${long}</var>
+<arg>"retry evidence " * 80</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<msg timestamp="20260330 18:13:40.131" level="INFO">${long} = retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry...</msg>
+<status status="PASS" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.131"/>
+</kw>
+<kw name="Fail" library="BuiltIn">
+<arg>${long}</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<msg timestamp="20260330 18:13:40.132" level="FAIL">retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence </msg>
+<status status="FAIL" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.132"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:13:40.131" endtime="20260330 18:13:40.132"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:13:40.129" endtime="20260330 18:13:40.132">retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence </status>
+</test>
+<test id="s1-t2" name="Secondary Failure" line="25">
+<kw name="Fail" library="BuiltIn">
+<arg>secondary failure</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<msg timestamp="20260330 18:13:40.132" level="FAIL">secondary failure</msg>
+<status status="FAIL" starttime="20260330 18:13:40.132" endtime="20260330 18:13:40.132"/>
+</kw>
+<status status="FAIL" starttime="20260330 18:13:40.132" endtime="20260330 18:13:40.133">secondary failure</status>
+</test>
+<status status="FAIL" starttime="20260330 18:13:40.111" endtime="20260330 18:13:40.133"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="2" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="2" skip="0" id="s1" name="Errors And Long">Errors And Long</stat>
+</suite>
+</statistics>
+<errors>
+<msg timestamp="20260330 18:13:40.129" level="ERROR">Error in file 'D:\project\rf_log_mcp\tests\fixture_sources\errors_and_long.robot' on line 2: Importing library 'DoesNotExist' failed: ModuleNotFoundError: No module named 'DoesNotExist'
+Traceback (most recent call last):
+  None
+PYTHONPATH:
+  C:\Users\admin\AppData\Local\uv\cache\archive-v0\PIXiKCkNAPM97HyWM9CkM\Scripts\robot.exe
+  C:\Users\admin\AppData\Roaming\uv\python\cpython-3.14.0-windows-x86_64-none\python314.zip
+  C:\Users\admin\AppData\Roaming\uv\python\cpython-3.14.0-windows-x86_64-none\DLLs
+  C:\Users\admin\AppData\Roaming\uv\python\cpython-3.14.0-windows-x86_64-none\Lib
+  C:\Users\admin\AppData\Roaming\uv\python\cpython-3.14.0-windows-x86_64-none
+  C:\Users\admin\AppData\Local\uv\cache\archive-v0\PIXiKCkNAPM97HyWM9CkM
+  C:\Users\admin\AppData\Local\uv\cache\archive-v0\PIXiKCkNAPM97HyWM9CkM\Lib\site-packages</msg>
+</errors>
+</robot>

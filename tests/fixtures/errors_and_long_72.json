@@ -1,0 +1,359 @@
+{
+  "generator": "Rebot 7.4.2 (Python 3.14.0 on win32)",
+  "generated": "2026-04-13T00:00:00",
+  "rpa": false,
+  "suite": {
+    "id": "s1",
+    "name": "Errors And Long",
+    "source": "tests/fixture_sources/errors_and_long.robot",
+    "tests": [
+      {
+        "id": "s1-t1",
+        "name": "Long Failure",
+        "lineno": 10,
+        "body": [
+          {
+            "name": "Log",
+            "args": [
+              "collected line one"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line one",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line two"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line two",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line three"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line three",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line four"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line four",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line five"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line five",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line six"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.130000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line six",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.130000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line seven"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line seven",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line eight"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line eight",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line nine"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line nine",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line ten"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line ten",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line eleven"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line eleven",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Log",
+            "args": [
+              "collected line twelve"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "collected line twelve",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:13:40.131000"
+              }
+            ]
+          },
+          {
+            "name": "Create Long Failure",
+            "status": "FAIL",
+            "elapsed_time": 0.001,
+            "start_time": "2026-03-30T18:13:40.131000",
+            "body": [
+              {
+                "name": "Evaluate",
+                "args": [
+                  "\"retry evidence \" * 80"
+                ],
+                "assign": [
+                  "${long}"
+                ],
+                "status": "PASS",
+                "elapsed_time": 0.0,
+                "start_time": "2026-03-30T18:13:40.131000",
+                "owner": "BuiltIn",
+                "doc": "Evaluates the given expression in Python and returns the result.",
+                "body": [
+                  {
+                    "type": "MESSAGE",
+                    "message": "${long} = retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry...",
+                    "level": "INFO",
+                    "timestamp": "2026-03-30T18:13:40.131000"
+                  }
+                ]
+              },
+              {
+                "name": "Fail",
+                "args": [
+                  "${long}"
+                ],
+                "status": "FAIL",
+                "elapsed_time": 0.001,
+                "start_time": "2026-03-30T18:13:40.131000",
+                "owner": "BuiltIn",
+                "doc": "Fails the test with the given message and optionally alters its tags.",
+                "body": [
+                  {
+                    "type": "MESSAGE",
+                    "message": "retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence ",
+                    "level": "FAIL",
+                    "timestamp": "2026-03-30T18:13:40.132000"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "status": "FAIL",
+        "elapsed_time": 0.003,
+        "start_time": "2026-03-30T18:13:40.129000",
+        "message": "retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence retry evidence "
+      },
+      {
+        "id": "s1-t2",
+        "name": "Secondary Failure",
+        "lineno": 25,
+        "body": [
+          {
+            "name": "Fail",
+            "args": [
+              "secondary failure"
+            ],
+            "status": "FAIL",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:13:40.132000",
+            "owner": "BuiltIn",
+            "doc": "Fails the test with the given message and optionally alters its tags.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "secondary failure",
+                "level": "FAIL",
+                "timestamp": "2026-03-30T18:13:40.132000"
+              }
+            ]
+          }
+        ],
+        "status": "FAIL",
+        "elapsed_time": 0.001,
+        "start_time": "2026-03-30T18:13:40.132000",
+        "message": "secondary failure"
+      }
+    ],
+    "status": "FAIL",
+    "elapsed_time": 0.022,
+    "start_time": "2026-03-30T18:13:40.111000"
+  },
+  "statistics": {
+    "total": {
+      "label": "All Tests",
+      "pass": 0,
+      "fail": 2,
+      "skip": 0
+    },
+    "suites": [
+      {
+        "label": "Errors And Long",
+        "name": "Errors And Long",
+        "id": "s1",
+        "pass": 0,
+        "fail": 2,
+        "skip": 0
+      }
+    ],
+    "tags": []
+  },
+  "errors": [
+    {
+      "message": "Error in file 'D:\\project\\rf_log_mcp\\tests\\fixture_sources\\errors_and_long.robot' on line 2: Importing library 'DoesNotExist' failed: ModuleNotFoundError: No module named 'DoesNotExist'\nTraceback (most recent call last):\n  None\nPYTHONPATH:\n  C:\\Users\\admin\\AppData\\Local\\uv\\cache\\archive-v0\\PIXiKCkNAPM97HyWM9CkM\\Scripts\\robot.exe\n  C:\\Users\\admin\\AppData\\Roaming\\uv\\python\\cpython-3.14.0-windows-x86_64-none\\python314.zip\n  C:\\Users\\admin\\AppData\\Roaming\\uv\\python\\cpython-3.14.0-windows-x86_64-none\\DLLs\n  C:\\Users\\admin\\AppData\\Roaming\\uv\\python\\cpython-3.14.0-windows-x86_64-none\\Lib\n  C:\\Users\\admin\\AppData\\Roaming\\uv\\python\\cpython-3.14.0-windows-x86_64-none\n  C:\\Users\\admin\\AppData\\Local\\uv\\cache\\archive-v0\\PIXiKCkNAPM97HyWM9CkM\n  C:\\Users\\admin\\AppData\\Local\\uv\\cache\\archive-v0\\PIXiKCkNAPM97HyWM9CkM\\Lib\\site-packages",
+      "level": "ERROR",
+      "timestamp": "2026-03-30T18:13:40.129000"
+    }
+  ]
+}

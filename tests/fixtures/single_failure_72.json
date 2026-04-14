@@ -1,0 +1,113 @@
+{
+  "generator": "Rebot 7.4.2 (Python 3.14.0 on win32)",
+  "generated": "2026-04-13T00:00:00",
+  "rpa": false,
+  "suite": {
+    "id": "s1",
+    "name": "Single Failure",
+    "source": "tests/fixture_sources/single_failure.robot",
+    "tests": [
+      {
+        "id": "s1-t1",
+        "name": "Passing Smoke",
+        "lineno": 2,
+        "body": [
+          {
+            "name": "Log",
+            "args": [
+              "warm up"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:12:56.305000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "warm up",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:12:56.305000"
+              }
+            ]
+          }
+        ],
+        "status": "PASS",
+        "elapsed_time": 0.001,
+        "start_time": "2026-03-30T18:12:56.304000"
+      },
+      {
+        "id": "s1-t2",
+        "name": "Single Failure",
+        "lineno": 5,
+        "body": [
+          {
+            "name": "Log",
+            "args": [
+              "begin"
+            ],
+            "status": "PASS",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:12:56.305000",
+            "owner": "BuiltIn",
+            "doc": "Logs the given message with the given level.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "begin",
+                "level": "INFO",
+                "timestamp": "2026-03-30T18:12:56.305000"
+              }
+            ]
+          },
+          {
+            "name": "Fail",
+            "args": [
+              "Expected 200 but got 503 from upstream"
+            ],
+            "status": "FAIL",
+            "elapsed_time": 0.0,
+            "start_time": "2026-03-30T18:12:56.305000",
+            "owner": "BuiltIn",
+            "doc": "Fails the test with the given message and optionally alters its tags.",
+            "body": [
+              {
+                "type": "MESSAGE",
+                "message": "Expected 200 but got 503 from upstream",
+                "level": "FAIL",
+                "timestamp": "2026-03-30T18:12:56.305000"
+              }
+            ]
+          }
+        ],
+        "status": "FAIL",
+        "elapsed_time": 0.0,
+        "start_time": "2026-03-30T18:12:56.305000",
+        "message": "Expected 200 but got 503 from upstream"
+      }
+    ],
+    "status": "FAIL",
+    "elapsed_time": 0.019,
+    "start_time": "2026-03-30T18:12:56.287000"
+  },
+  "statistics": {
+    "total": {
+      "label": "All Tests",
+      "pass": 1,
+      "fail": 1,
+      "skip": 0
+    },
+    "suites": [
+      {
+        "label": "Single Failure",
+        "name": "Single Failure",
+        "id": "s1",
+        "pass": 1,
+        "fail": 1,
+        "skip": 0
+      }
+    ],
+    "tags": []
+  },
+  "errors": []
+}

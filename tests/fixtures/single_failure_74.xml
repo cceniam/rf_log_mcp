@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.14.0 on win32)" generated="2026-03-30T18:12:57.477587" rpa="false" schemaversion="5">
+<suite id="s1" name="Single Failure" source="D:\project\rf_log_mcp\tests\fixture_sources\single_failure.robot">
+<test id="s1-t1" name="Passing Smoke" line="2">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-03-30T18:12:57.538621" level="INFO">warm up</msg>
+<arg>warm up</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-03-30T18:12:57.538392" elapsed="0.000275"/>
+</kw>
+<status status="PASS" start="2026-03-30T18:12:57.537868" elapsed="0.000886"/>
+</test>
+<test id="s1-t2" name="Single Failure" line="5">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-03-30T18:12:57.539212" level="INFO">begin</msg>
+<arg>begin</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-03-30T18:12:57.539044" elapsed="0.000197"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-03-30T18:12:57.539456" level="FAIL">Expected 200 but got 503 from upstream</msg>
+<arg>Expected 200 but got 503 from upstream</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-03-30T18:12:57.539295" elapsed="0.000242">Expected 200 but got 503 from upstream</status>
+</kw>
+<status status="FAIL" start="2026-03-30T18:12:57.538877" elapsed="0.000746">Expected 200 but got 503 from upstream</status>
+</test>
+<status status="FAIL" start="2026-03-30T18:12:57.478827" elapsed="0.061003"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Single Failure" id="s1" pass="1" fail="1" skip="0">Single Failure</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

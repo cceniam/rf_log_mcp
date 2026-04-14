@@ -1,0 +1,19 @@
+{
+  "generator": "Rebot 7.1.9 (Python 3.14.0 on win32)",
+  "generated": "2026-04-13T00:00:00",
+  "rpa": false,
+  "suite": {
+    "id": "s1",
+    "name": "Unsupported Json",
+    "tests": []
+  },
+  "statistics": {
+    "total": {
+      "label": "All Tests",
+      "pass": 0,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "errors": []
+}
