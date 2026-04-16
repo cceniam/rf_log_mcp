@@ -6,9 +6,9 @@
 
 - **渐进式披露视图**（summary → failure_path → minimal_context/step_window → patch_suggestion → diff），默认只给最小充分证据，超长内容统一分页与截断。
 - **严格 schema 契约 + 可追溯证据链**：每个视图/工具输出带 schema 版本、token 预算、ref_uri 证据引用；补丁建议必须包含风险评分与回滚策略。
-- **Robot Framework 官方 API 优先**：解析 output.xml 使用 `ExecutionResult` + `ResultVisitor`，避免手写 XML 解析；JSON 输出遵循 `result.json` schema；RF7.2 起执行态可直接生成完整 JSON 输出。citeturn0search0turn0search4turn3search1turn3search2turn0search2
-- **MCP 分工明确**：Resources 用于稳定上下文；Tools 用于检索/聚合/决策/生成补丁；分页采用 MCP 规定的不透明 cursor。citeturn1search1turn1search21turn1search0
-- **默认 stdio 部署**：本地集成简单且 MCP 推荐；严格遵守 stdio 规范（stdout 仅输出协议消息，日志写 stderr）。citeturn4search0turn4search4
+- **Robot Framework 官方 API 优先**：解析 output.xml 使用 `ExecutionResult` + `ResultVisitor`，避免手写 XML 解析；JSON 输出遵循 `result.json` schema；RF7.2 起执行态可直接生成完整 JSON 输出。
+- **MCP 分工明确**：Resources 用于稳定上下文；Tools 用于检索/聚合/决策/生成补丁；分页采用 MCP 规定的不透明 cursor。
+- **默认 stdio 部署**：本地集成简单且 MCP 推荐；严格遵守 stdio 规范（stdout 仅输出协议消息，日志写 stderr）。
 
 本计划分三阶段交付：**MVP（可用）→ Phase2（可修）→ Phase3（可规模化与可治理）**。每阶段提供明确里程碑、任务拆分、估时（人日）、复杂度、优先级、角色建议、验收标准、风险缓解与自动化评估方法。
 
@@ -27,8 +27,8 @@
 | 误修率 | 补丁引入新失败比例 | < **5%**（建议；无特定约束） | before/after diff + 失败签名对比 |
 | 可解释性 | 每条 patch_suggestion 含证据引用、风险、回滚 | **100%（强约束）** | schema 校验（缺字段即失败） |
 
-> “渐进式披露 + 按需检索上下文”属于主流 Agent 上下文工程实践，用以避免把无关信息塞满上下文。citeturn2search1  
-> 对 LLM 输出的补丁建议建议采用结构化输出/JSON Schema 约束，显著降低字段缺失与格式漂移风险。citeturn2search0turn2search9
+> “渐进式披露 + 按需检索上下文”属于主流 Agent 上下文工程实践，用以避免把无关信息塞满上下文。  
+> 对 LLM 输出的补丁建议建议采用结构化输出/JSON Schema 约束，显著降低字段缺失与格式漂移风险。
 
 ### 范围（In-scope / Out-of-scope）
 
@@ -47,9 +47,9 @@
 ### 团队资源与依赖假设
 
 - 人员规模：**无特定约束**（本计划提供“最小团队配置建议”）。
-- 语言与框架：默认 **Python**（符合 Robot Framework 官方 API 使用语境）。citeturn0search4turn4search2
-- Robot Framework 版本：至少覆盖 RF7.x；JSON 执行态输出从 RF7.2 开始支持；Rebot RF7.0 起可生成 JSON，但 7.2 起 JSON 才包含完整统计与 errors。citeturn3search1turn3search2turn3search4
-- MCP 协议：遵循 MCP 规范（resources/tools/pagination/transports）；stdio 与 Streamable HTTP 二选一或同时支持。citeturn4search0turn1search1turn1search0
+- 语言与框架：默认 **Python**（符合 Robot Framework 官方 API 使用语境）。
+- Robot Framework 版本：至少覆盖 RF7.x；JSON 执行态输出从 RF7.2 开始支持；Rebot RF7.0 起可生成 JSON，但 7.2 起 JSON 才包含完整统计与 errors。
+- MCP 协议：遵循 MCP 规范（resources/tools/pagination/transports）；stdio 与 Streamable HTTP 二选一或同时支持。
 
 ---
 
@@ -59,23 +59,23 @@
 
 **选择理由**
 
-- 官方明确建议解析结果优先使用 Robot Framework API，配合 `ResultVisitor` 遍历 suite/test/keyword 生命周期，而非手写 XML 解析。citeturn0search0turn0search4turn0search8
-- `ExecutionResult` 支持从 XML 读取结果；并支持 `to_json()`；RF7.2 起 JSON 结果包含完整数据（errors、statistics）。citeturn3search4turn3search2turn3search1
+- 官方明确建议解析结果优先使用 Robot Framework API，配合 `ResultVisitor` 遍历 suite/test/keyword 生命周期，而非手写 XML 解析。
+- `ExecutionResult` 支持从 XML 读取结果；并支持 `to_json()`；RF7.2 起 JSON 结果包含完整数据（errors、statistics）。
 
 **实现要点**
 
-- XML：`robot.api.ExecutionResult(path).visit(visitor)` 收集结构化结果。citeturn0search4turn3search6
-- JSON：按 `result.json` schema 映射到归一化模型（suite/tests/body/messages/errors/statistics）。citeturn0search2turn0search9
+- XML：`robot.api.ExecutionResult(path).visit(visitor)` 收集结构化结果。
+- JSON：按 `result.json` schema 映射到归一化模型（suite/tests/body/messages/errors/statistics）。
 - 版本兼容：  
-  - RF7.0+ output.xml schema version=5，XSD 注释声明兼容 RF7.0+。citeturn0search2  
-  - JSON 输出：RF7.2 起执行态支持；RF7.0 起 Rebot 可生成 JSON，但早期 JSON 不含 errors/statistics（需显式处理）。citeturn3search1turn3search2turn3search0
+  - RF7.0+ output.xml schema version=5，XSD 注释声明兼容 RF7.0+。  
+  - JSON 输出：RF7.2 起执行态支持；RF7.0 起 Rebot 可生成 JSON，但早期 JSON 不含 errors/statistics（需显式处理）。
 
 ### MCP server：FastMCP + stdio（默认）
 
-- MCP 规范定义标准传输：stdio 与 Streamable HTTP；并建议客户端尽可能支持 stdio。citeturn4search0  
-- stdio 规范要求：stdout 只能输出 MCP 消息；允许写 stderr 做日志；消息必须为 UTF-8 且不含内嵌换行（以换行分隔）。citeturn4search4  
-- FastMCP 用 Python 类型标注自动生成工具 schema，降低维护成本。citeturn4search21turn4search2  
-- 调试工具：MCP Inspector 支持连接 stdio/HTTP，调用 tools/resources/prompts 并观察通知流，建议纳入开发流程。citeturn4search8turn4search10  
+- MCP 规范定义标准传输：stdio 与 Streamable HTTP；并建议客户端尽可能支持 stdio。  
+- stdio 规范要求：stdout 只能输出 MCP 消息；允许写 stderr 做日志；消息必须为 UTF-8 且不含内嵌换行（以换行分隔）。  
+- FastMCP 用 Python 类型标注自动生成工具 schema，降低维护成本。  
+- 调试工具：MCP Inspector 支持连接 stdio/HTTP，调用 tools/resources/prompts 并观察通知流，建议纳入开发流程。  
 
 ### 索引与存储技术：推荐 SQLite + FTS5（MVP 起步）
 
@@ -86,16 +86,16 @@
 | 结构索引 | SQLite（run/test/node/tag 表） | 简单稳定；事务保证 | schema 迁移需要管理 | DuckDB（分析强；写入模型不同） |
 | 归一化模型 | dataclasses/pydantic | 开发效率高；校验强 | pydantic 有性能成本 | msgspec（更快但学习成本） |
 
-> 索引/检索/分页的存在是降低 token 的关键：LLM 不读全文，而是通过工具按需取证据片段（与上下文工程实践一致）。citeturn2search1turn1search0
+> 索引/检索/分页的存在是降低 token 的关键：LLM 不读全文，而是通过工具按需取证据片段（与上下文工程实践一致）。
 
 ### 视图裁剪与分页：强制执行
 
-- MCP 分页采用 **不透明 cursor**，客户端不得假设固定页大小。citeturn1search0turn1search2  
-- Resources/Tools 分工：Resources 提供“上下文数据”；Tools 提供“计算/查询/决策”。citeturn1search1turn1search21  
+- MCP 分页采用 **不透明 cursor**，客户端不得假设固定页大小。  
+- Resources/Tools 分工：Resources 提供“上下文数据”；Tools 提供“计算/查询/决策”。  
 
 ### 大文件风险的架构预案
 
-Robot Framework 社区出现过超大 output.xml（例如 8.5GB）导致 `ExecutionResult` 处理被系统 kill 的讨论，说明必须设计“文件大小上限、分页、裁剪、可选增量策略”。citeturn3search16
+Robot Framework 社区出现过超大 output.xml（例如 8.5GB）导致 `ExecutionResult` 处理被系统 kill 的讨论，说明必须设计“文件大小上限、分页、裁剪、可选增量策略”。
 
 ---
 
@@ -134,7 +134,7 @@ gantt
   Phase3 里程碑                       :milestone, m3, after c3, 0d
 ```
 
-> MCP 推荐 stdio 用于本地集成，HTTP 用于远程；计划中 Phase3 再补齐远程部署能力以降低早期复杂度。citeturn4search0  
+> MCP 推荐 stdio 用于本地集成，HTTP 用于远程；计划中 Phase3 再补齐远程部署能力以降低早期复杂度。  
 
 ---
 
@@ -161,10 +161,10 @@ gantt
 **验收标准（Acceptance Criteria）**
 
 - 功能：
-  - 支持 `output.xml` 解析（ExecutionResult+ResultVisitor）。citeturn0search4turn0search0  
-  - 支持 `output.json` 解析（按 result.json schema 字段映射）。citeturn3search1turn0search2  
-  - resources 可读取，tools 可调用，分页 cursor 生效。citeturn1search0turn1search1  
-  - stdio 规范符合：stdout 不输出日志，日志写 stderr。citeturn4search4  
+  - 支持 `output.xml` 解析（ExecutionResult+ResultVisitor）。  
+  - 支持 `output.json` 解析（按 result.json schema 字段映射）。  
+  - resources 可读取，tools 可调用，分页 cursor 生效。  
+  - stdio 规范符合：stdout 不输出日志，日志写 stderr。  
 - 性能（建议阈值，环境相关）：
   - 解析后视图生成 P95 < 300ms（缓存命中）。  
   - 100MB 结果文件 parse P95 < 3s（无特定约束，作为建议基线）。  
@@ -177,17 +177,17 @@ gantt
 | 任务 | 说明 | 角色建议 | 估时（人日） | 复杂度 | 优先级 | 依赖 |
 |---|---|---:|---:|---:|---:|---|
 | 契约冻结：views/tools schema v1 | 定义 JSON schema、字段、预算、cursor、ref_uri | Tech Lead + 后端 + LLM 工程师 | 3 | 中 | 高 | 无 |
-| XML 解析 adapter | ExecutionResult + ResultVisitor 收集 suite/test/kw/msg | 后端工程师 | 5 | 中 | 高 | RF APIciteturn0search4 |
-| JSON 解析 adapter | 按 result.json 映射；识别 RF7.0/7.1 不完整 JSON 并降级 | 后端工程师 | 4 | 中 | 高 | JSON 输出说明citeturn3search1turn3search2 |
+| XML 解析 adapter | ExecutionResult + ResultVisitor 收集 suite/test/kw/msg | 后端工程师 | 5 | 中 | 高 | RF API |
+| JSON 解析 adapter | 按 result.json 映射；识别 RF7.0/7.1 不完整 JSON 并降级 | 后端工程师 | 4 | 中 | 高 | JSON 输出说明 |
 | 归一化模型与 run_id | dataclasses/pydantic；run_id=hash(path+generated) | 后端工程师 | 3 | 中 | 高 | 无 |
 | 视图：summary | 提取总统计、失败 TopK、errors TopK（若存在） | 后端工程师 | 2 | 低 | 高 | 解析完成 |
 | 视图：failure_path | DFS 提取最短失败链 + message 摘要 | 后端工程师 + LLM 工程师 | 3 | 中 | 高 | 归一化模型 |
-| 视图：step_window（分页） | 线性化步骤 + cursor 分页 | 后端工程师 | 3 | 中 | 高 | 分页规范citeturn1search0 |
-| 工具：parse_result | ingest、缓存、索引开关、返回 run_id 与资源 URI | 后端工程师 | 2 | 中 | 高 | MCP toolsciteturn1search21 |
+| 视图：step_window（分页） | 线性化步骤 + cursor 分页 | 后端工程师 | 3 | 中 | 高 | 分页规范 |
+| 工具：parse_result | ingest、缓存、索引开关、返回 run_id 与资源 URI | 后端工程师 | 2 | 中 | 高 | MCP tools |
 | 工具：search_messages（基础版） | 先做线性扫描 + 简单倒排（或 sqlite 起步） | 后端工程师 | 3 | 中 | 中 | 无 |
-| MCP server（FastMCP+stdio） | tools/resources/prompts 注册；stderr logging | 后端工程师 | 2 | 中 | 高 | FastMCPciteturn4search21turn4search4 |
-| 测试夹具与单测 | fixtures + schema 校验 + 回归用例 | 测试工程师 | 5 | 中 | 高 | result.xsd/result.jsonciteturn0search2turn0search2 |
-| 集成测试（Inspector） | 用 MCP Inspector 调用资源/工具做冒烟测试 | 测试工程师 | 2 | 低 | 中 | Inspectorciteturn4search8turn4search10 |
+| MCP server（FastMCP+stdio） | tools/resources/prompts 注册；stderr logging | 后端工程师 | 2 | 中 | 高 | FastMCP |
+| 测试夹具与单测 | fixtures + schema 校验 + 回归用例 | 测试工程师 | 5 | 中 | 高 | result.xsd/result.json |
+| 集成测试（Inspector） | 用 MCP Inspector 调用资源/工具做冒烟测试 | 测试工程师 | 2 | 低 | 中 | Inspector |
 | CI 初版 | lint/pytest/打包；输出基准报告 | SRE/DevOps | 2 | 中 | 中 | 无 |
 
 > MVP 预计总工作量：约 **39 人日**（可按人力并行压缩日历时间）。
@@ -203,8 +203,8 @@ gantt
 - 提供 `diff` 视图、`decide_retry` 与 `propose_patch`（输出 patch_suggestion：diff + 风险评分 + 回滚 + 证据引用）。
 - 建立 3 个实验用例的自动化评估闭环（token/准确率/命中率/误修率/耗时）。
 
-> 官方 flaky tests 指南提供重试手段（WUKS、rerunfailed、listener 标签重试）可作为 decide_retry 的策略来源。citeturn0search3  
-> RF 文档与源码明确：RF7.2 起 JSON 输出包含完整统计与 errors；需纳入兼容策略与测试。citeturn3search2turn3search4  
+> 官方 flaky tests 指南提供重试手段（WUKS、rerunfailed、listener 标签重试）可作为 decide_retry 的策略来源。  
+> RF 文档与源码明确：RF7.2 起 JSON 输出包含完整统计与 errors；需纳入兼容策略与测试。  
 
 #### Phase2 里程碑（Milestone M2）
 
@@ -229,7 +229,7 @@ gantt
 - 质量（建议阈值；若无标注集则“无特定约束”）：
   - 诊断 Top-1 ≥70% 或“无特定约束”；修复命中率 ≥30% 或“无特定约束”；误修率 <5% 或“无特定约束”。  
 - LLM 输出稳定性：
-  - 通过 JSON Schema/结构化输出约束后，patch_suggestion schema 校验通过率 ≥99%（建议）。citeturn2search0turn2search9  
+  - 通过 JSON Schema/结构化输出约束后，patch_suggestion schema 校验通过率 ≥99%（建议）。  
 
 #### Phase2 任务分解表
 
@@ -240,9 +240,9 @@ gantt
 | SQLite 索引与 FTS5 | message 倒排 + tag 索引 + node 定位 | 后端工程师 | 6 | 中 | 高 | 解析完成 |
 | search_messages 升级 | 从线性扫描升级到 FTS + cursor | 后端工程师 | 3 | 中 | 中 | FTS |
 | diff 视图 | test 状态/路径/message 差异；输出 token 预算 | 后端工程师 | 5 | 中 | 中 | 索引 |
-| decide_retry 工具 | 规则/特征提取；返回 action/参数/backoff | LLM 工程师 + 后端 | 4 | 中 | 高 | flaky 指南citeturn0search3 |
-| propose_patch 工具 | failure_type → 模板化补丁；风险评分；证据链 | LLM 工程师 + 后端 | 7 | 高 | 高 | 结构化输出citeturn2search0 |
-| Prompt 模板 & few-shot | 强制“先 summary 后 detail”；限制 token | LLM 工程师 | 3 | 中 | 中 | 上下文工程citeturn2search1 |
+| decide_retry 工具 | 规则/特征提取；返回 action/参数/backoff | LLM 工程师 + 后端 | 4 | 中 | 高 | flaky 指南 |
+| propose_patch 工具 | failure_type → 模板化补丁；风险评分；证据链 | LLM 工程师 + 后端 | 7 | 高 | 高 | 结构化输出 |
+| Prompt 模板 & few-shot | 强制“先 summary 后 detail”；限制 token | LLM 工程师 | 3 | 中 | 中 | 上下文工程 |
 | 评估 harness（3 实验） | 数据集、脚本、自动评分、基线对比 | 测试工程师 + LLM 工程师 | 8 | 高 | 高 | 见后文 |
 | 性能与稳定性压测 | 大文件、长步骤窗口、FTS 压测 | 测试工程师 | 4 | 中 | 中 | 基准 |
 | 文档与示例 | API 规范表、样例调用、常见问题 | Tech Lead | 2 | 低 | 中 | D7-D10 |
@@ -259,8 +259,8 @@ gantt
 - 将“应用补丁”拆为独立组件并纳入人类审核/回滚机制（rf-log-mcp 仅产出建议与证据）。
 - 工程硬化：多进程并发、资源限额、速率限制、落盘缓存治理。
 
-> MCP 传输规范：stdio 与 Streamable HTTP 为标准；远程部署建议使用 Streamable HTTP。citeturn4search0turn4search15  
-> 大文件风险在社区已有真实案例（8.5GB output.xml）。citeturn3search16  
+> MCP 传输规范：stdio 与 Streamable HTTP 为标准；远程部署建议使用 Streamable HTTP。  
+> 大文件风险在社区已有真实案例（8.5GB output.xml）。  
 
 #### Phase3 里程碑（Milestone M3）
 
@@ -288,9 +288,9 @@ gantt
 
 | 任务 | 说明 | 角色建议 | 估时（人日） | 复杂度 | 优先级 | 依赖 |
 |---|---|---:|---:|---:|---:|---|
-| 大文件/增量策略 | 文件阈值、按 test 子树索引、分段解析 | 后端工程师 | 10 | 高 | 高 | 大文件案例citeturn3search16 |
+| 大文件/增量策略 | 文件阈值、按 test 子树索引、分段解析 | 后端工程师 | 10 | 高 | 高 | 大文件案例 |
 | 失败签名/聚类 | 归一化 message、聚类、flaky 预测 | LLM 工程师 + 后端 | 10 | 高 | 中 | Phase2 diff |
-| Streamable HTTP 部署 | 远程 transport + 配置 + TLS（无特定约束） | SRE + 后端 | 8 | 中 | 中 | transportsciteturn4search0 |
+| Streamable HTTP 部署 | 远程 transport + 配置 + TLS（无特定约束） | SRE + 后端 | 8 | 中 | 中 | transports |
 | 指标与监控 | OpenTelemetry/Prometheus（任选） | SRE | 6 | 中 | 中 | 无 |
 | patch-apply（独立） | 应用 diff、审批、回滚、审计 | 平台工程师 + SRE | 8 | 高 | 高 | 安全策略 |
 | 限额与防滥用 | 单次返回大小限制、速率限制、超时 | 后端工程师 | 5 | 中 | 中 | 无 |
@@ -314,7 +314,7 @@ flowchart LR
   F --> G[Evaluation Harness: 3 Experiments]
   G --> H[Build Package / Container]
   H --> I[Publish Artifact]
-  I --> J[Deploy (Local stdio / Remote HTTP)]
+  I --> J["Deploy (Local stdio / Remote HTTP)"]
   J --> K[Smoke Test: tools/resources]
   K --> L[Rollback if fail]
 ```
@@ -323,7 +323,7 @@ flowchart LR
 
 **本地/IDE 场景（优先）**
 
-- 使用 stdio transport：client 启动 server 子进程，通过 stdin/stdout 传 JSON-RPC；server 日志写 stderr。citeturn4search4turn4search0  
+- 使用 stdio transport：client 启动 server 子进程，通过 stdin/stdout 传 JSON-RPC；server 日志写 stderr。  
 - 适配 IDE/Agent：提供一份标准配置（例如 `mcp.json`），并在 README 给出示例。
 
 **CI 场景**
@@ -337,7 +337,7 @@ flowchart LR
 
 **生产/共享服务（可选，Phase3）**
 
-- 使用 Streamable HTTP（远程标准传输）。citeturn4search0turn4search15  
+- 使用 Streamable HTTP（远程标准传输）。  
 - 安全控制（无特定约束）：至少包含访问控制、速率限制、审计日志；避免敏感日志泄露。
 
 ### 监控与日志（建议）
@@ -349,7 +349,7 @@ flowchart LR
   - `payload_bytes_out`、`estimated_tokens_out`
   - `errors_total{type}`
 - 日志：
-  - stdio 下写 stderr（规范允许），并输出结构化 JSON log 便于收集。citeturn4search4turn4search8  
+  - stdio 下写 stderr（规范允许），并输出结构化 JSON log 便于收集。  
 
 ---
 
@@ -361,14 +361,14 @@ flowchart LR
 |---|---|---|---|
 | 单元测试 | 正确性 | adapter、failure_path 算法、截断/高亮、cursor 分页 | pytest |
 | schema 测试 | 契约稳定 | 视图/工具输出符合 JSON schema；版本字段存在 | jsonschema |
-| 集成测试 | MCP 可用性 | tools/resources 可被 Inspector 调用；stdio 不污染 stdout | MCP Inspectorciteturn4search8turn4search10 |
+| 集成测试 | MCP 可用性 | tools/resources 可被 Inspector 调用；stdio 不污染 stdout | MCP Inspector |
 | 性能测试 | 延迟与吞吐 | parse/视图/检索 P95；大文件降级路径 | 自研基准脚本 |
 | LLM 评估 | 质量 | 诊断准确率、修复命中率、误修率 | 评估 harness（下述） |
 
 ### 三个可复现实验用例（与设计稿一致）
 
-> 结果结构参考 Robot Framework `result.json`/`result.xsd`。citeturn0search2turn3search1  
-> flaky 重试策略参考官方 flaky tests 页面。citeturn0search3  
+> 结果结构参考 Robot Framework `result.json`/`result.xsd`。  
+> flaky 重试策略参考官方 flaky tests 页面。  
 
 | 实验 | 输入摘要 | 预期 LLM 行为 | 评估指标 |
 |---|---|---|---|
@@ -400,28 +400,19 @@ flowchart LR
 
 ## 风险矩阵与缓解措施
 
-> 大文件导致解析失败在社区已有真实案例（output.xml 约 8.5GB）。citeturn3search16  
-> stdio 下 stdout 污染会直接破坏 MCP 协议消息流，需严格遵守规范。citeturn4search4  
-> LLM 输出不稳定可用结构化输出强约束降低风险。citeturn2search0turn2search9  
+> 大文件导致解析失败在社区已有真实案例（output.xml 约 8.5GB）。  
+> stdio 下 stdout 污染会直接破坏 MCP 协议消息流，需严格遵守规范。  
+> LLM 输出不稳定可用结构化输出强约束降低风险。  
 
 | 风险 | 概率 | 影响 | 优先级 | 触发信号 | 缓解措施 |
 |---|---:|---:|---:|---|---|
 | token 爆炸（视图过大/返回全文） | 中 | 高 | 高 | LLM 上下文超限、响应慢 | 强制预算与分页；默认 minimal_context；超限截断并返回 ref_uri |
-| stdout 污染（stdio 协议破坏） | 中 | 高 | 高 | MCP client 解析失败 | 统一日志写 stderr；在 CI 加“stdout 不含非 JSON-RPC”测试citeturn4search4 |
-| 超大 output.xml OOM/被 kill | 中 | 高 | 高 | 解析超时、进程退出 | 文件阈值+降级；推荐 JSON 输出；Phase3 增量策略citeturn3search16turn3search1 |
-| schema 兼容问题（RF 版本差异） | 中 | 中 | 高 | 解析字段缺失、统计不一致 | RF 版本检测；fixture 覆盖 RF7.0/7.2；兼容层降级citeturn3search1turn3search2 |
-| LLM 输出格式漂移（patch 不可用） | 高 | 高 | 高 | patch 缺字段、diff 损坏 | 结构化输出/JSON Schema；server 侧二次校验；失败则返回修复提示citeturn2search0turn2search9 |
+| stdout 污染（stdio 协议破坏） | 中 | 高 | 高 | MCP client 解析失败 | 统一日志写 stderr；在 CI 加“stdout 不含非 JSON-RPC”测试 |
+| 超大 output.xml OOM/被 kill | 中 | 高 | 高 | 解析超时、进程退出 | 文件阈值+降级；推荐 JSON 输出；Phase3 增量策略 |
+| schema 兼容问题（RF 版本差异） | 中 | 中 | 高 | 解析字段缺失、统计不一致 | RF 版本检测；fixture 覆盖 RF7.0/7.2；兼容层降级 |
+| LLM 输出格式漂移（patch 不可用） | 高 | 高 | 高 | patch 缺字段、diff 损坏 | 结构化输出/JSON Schema；server 侧二次校验；失败则返回修复提示 |
 | 误修掩盖真实缺陷（过度重试/等待） | 中 | 高 | 高 | 通过率上升但缺陷被掩盖 | 风险评分+上限约束；默认人工审核；对重试/等待类建议加总耗时上限 |
 | 检索性能不足（无索引） | 中 | 中 | 中 | search 超时 | MVP 先简化；Phase2 上 SQLite FTS5；缓存视图 |
 | 安全/隐私泄露（日志含敏感信息） | 低~中 | 高 | 中 | 日志外发 | 本地优先；脱敏规则；远程部署加鉴权与审计（Phase3） |
 
 ---
-
-## 下一步行动清单（可直接开工）
-
-- 冻结 v1 契约：6 类视图 schema + 关键 tools schema（parse/search/decide_retry/propose_patch/diff），并确定 cursor、budget、ref_uri 规则。  
-- 搭建 MVP 骨架：FastMCP stdio server + ExecutionResult/ResultVisitor XML adapter + JSON adapter。citeturn0search4turn4search21turn4search4  
-- 先实现最短闭环：parse_result → summary → failure_path → step_window（分页）→ search_messages，并接入 MCP Inspector 冒烟测试。citeturn4search8turn4search10  
-- 建立 fixtures 与 CI：覆盖 RF7 XML + RF7.2 JSON；加入 stdout 污染检测；输出基准报告。  
-- Phase2 提前准备评估集：三实验用例的 ground truth 标注格式与评分脚本框架；并确定 LLM 评估所用模型（无特定约束）。  
-- 明确“patch apply”边界：在计划外建立独立 patch-apply 工具与审批/回滚机制，rf-log-mcp 仅输出建议与证据链。

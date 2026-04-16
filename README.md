@@ -12,12 +12,12 @@
 暴露的 MCP 能力：
 
 - Tools
-  - `parse_result`
-  - `get_view`
-  - `search_messages`
+    - `parse_result`
+    - `get_view`
+    - `search_messages`
 - Resources
-  - `rf://runs/{run_id}/summary`
-  - `rf://runs/{run_id}/tests/{test_id}`
+    - `rf://runs/{run_id}/summary`
+    - `rf://runs/{run_id}/tests/{test_id}`
 
 支持的视图：
 
@@ -28,19 +28,7 @@
 ## 关键说明
 
 - 这个项目是 **MCP stdio server**
-- **LLM 不会直接调用 wheel**
 - 正确方式是：MCP 宿主启动 `rf-log-mcp` 进程，再通过 stdio 调用工具和资源
-
-## 标识设计
-
-- 对外 `run_id`：**整数主键**
-- 对内 `content_hash`：**文件内容哈希，仅用于服务内部去重**
-
-推荐做法：
-
-1. 先调用 `parse_result(path)`
-2. 保存返回的整数 `run_id`
-3. 后续统一使用这个 `run_id`
 
 ---
 
@@ -52,20 +40,19 @@
 uv sync
 ```
 
-### 2. 直接从源码启动
-
-```bash
-uv run python -m rf_log_mcp
-```
-
-### 3. MCP 配置示例
+### 2. 推荐的 MCP 配置示例
 
 ```json
 {
   "mcpServers": {
     "rf-log-mcp": {
       "command": "uv",
-      "args": ["run", "python", "-m", "rf_log_mcp"]
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "rf_log_mcp"
+      ]
     }
   }
 }
@@ -188,37 +175,19 @@ MCP 配置示例：
 }
 ```
 
----
-
-## 本地调试
-
-如果只想检查服务输出，不想启动 stdio 传输，可使用：
-
-```bash
-uv run python debug_service.py --fixture tests/fixtures/single_failure_611.xml --action summary
-uv run python debug_service.py --fixture tests/fixtures/single_failure_72.json --action failure_path --selector s1-t2
-uv run python debug_service.py --fixture tests/fixtures/errors_and_long_72.json --action search --query "collected line" --limit 2
-```
-
----
-
 ## 常见问题
 
-### 1. 为什么不能把 wheel 直接给 LLM？
+### 1. 为什么使用uv 
 
-因为 LLM 调用的是 **MCP server 进程**，不是 Python 包文件本身。
+1. 本地环境的依赖版本可能和 mcp的冲突, 需要venv 来隔离依赖冲突(conda 太慢, uv快)
 
-### 2. 为什么推荐用整数 `run_id`？
-
-因为它更短，更适合 LLM、多轮对话和人工排查；长 hash 仅保留在内部用于去重。
-
-### 3. `get_view` / `search_messages` 能传文件路径吗？
+### 2. `get_view` / `search_messages` 能传文件路径吗？
 
 可以。  
 如果该文件已经被解析过，服务会先把路径转换成对应的 `run_id` 再查询。  
 但仍然推荐优先使用 `parse_result()` 返回的整数 `run_id`。
 
-### 4. 什么情况下不能直接使用这个项目？
+### 5. 什么情况下不能直接使用这个项目？
 
 如果你的 LLM 平台：
 
