@@ -49,42 +49,90 @@ def decode_cursor(cursor: str | None) -> int:
     return offset
 
 
-def build_summary(run: NormalizedRun, *, budget: int = DEFAULT_BUDGET) -> SummaryPayload:
-    truncated = False
+def _clamp_page_size(page_size: int, *, default: int, maximum: int = 100) -> int:
+    return min(max(page_size or default, 1), maximum)
+
+
+def _level_severity(level: str | None) -> int:
+    return {
+        "ERROR": 4,
+        "FAIL": 3,
+        "WARN": 2,
+        "WARNING": 2,
+        "INFO": 1,
+        "DEBUG": 0,
+        "TRACE": 0,
+    }.get((level or "").upper(), 0)
+
+
+def _shrink_messages(items: list[dict[str, Any]], max_chars: int) -> bool:
+    changed = False
+    for item in items:
+        message = item.get("message")
+        if not isinstance(message, str):
+            continue
+        shortened = truncate_text(message, max_chars)
+        if shortened != message:
+            item["message"] = shortened
+            changed = True
+    return changed
+
+
+def build_summary(
+    run: NormalizedRun,
+    *,
+    cursor: str | None = None,
+    budget: int = DEFAULT_BUDGET,
+    page_size: int = 10,
+) -> SummaryPayload:
+    message_truncated = False
+    budget_truncated = False
+    offset = decode_cursor(cursor)
+    size = _clamp_page_size(page_size, default=10)
+    failed_nodes = run.failed_tests
+    page_nodes = failed_nodes[offset : offset + size]
+    next_cursor = (
+        encode_cursor(offset + len(page_nodes))
+        if offset + len(page_nodes) < len(failed_nodes)
+        else None
+    )
     failed_tests = []
-    for node in run.failed_tests:
+    for node in page_nodes:
+        shortened = truncate_text(node.message, 320)
+        if shortened != node.message:
+            message_truncated = True
         failed_tests.append(
             {
                 "test_id": node.id,
                 "name": node.name,
                 "longname": node.longname,
                 "status": node.status,
-                "message": truncate_text(node.message, 320),
+                "message": shortened,
                 "ref_uri": node.ref_uri,
             }
         )
-        if node.message and len(node.message) > 320:
-            truncated = True
     errors = []
-    for item in run.errors:
+    for item in run.errors[:10]:
+        shortened = truncate_text(item.message, 320)
+        if shortened != item.message:
+            message_truncated = True
         errors.append(
             {
                 "error_id": item.id,
                 "level": item.level,
-                "message": truncate_text(item.message, 320),
+                "message": shortened,
                 "ref_uri": item.ref_uri,
             }
         )
-        if len(item.message) > 320:
-            truncated = True
-    while len(failed_tests) > 10:
-        failed_tests.pop()
-        truncated = True
+    page_truncated = next_cursor is not None
     payload = SummaryPayload(
         input_profile=run.metadata.input_profile,
         run_id=run.run_id,
         estimated_tokens=0,
-        truncated=truncated,
+        truncated=message_truncated or budget_truncated or page_truncated,
+        message_truncated=message_truncated,
+        budget_truncated=budget_truncated,
+        page_truncated=page_truncated,
         metadata={
             "source_path": run.metadata.source_path,
             "source_name": run.metadata.source_name,
@@ -97,13 +145,42 @@ def build_summary(run: NormalizedRun, *, budget: int = DEFAULT_BUDGET) -> Summar
         },
         statistics=run.statistics,
         failed_tests=failed_tests,
-        errors=errors[:10],
+        errors=errors,
+        next_cursor=next_cursor,
     )
     payload.estimated_tokens = estimate_tokens(payload.model_dump())
     if payload.estimated_tokens > budget:
-        payload.truncated = True
-        payload.failed_tests = payload.failed_tests[:5]
-        payload.errors = payload.errors[:5]
+        budget_truncated = True
+        for max_chars in (160, 80, 40):
+            failed_messages_truncated = _shrink_messages(payload.failed_tests, max_chars)
+            error_messages_truncated = _shrink_messages(payload.errors, max_chars)
+            message_truncated = (
+                failed_messages_truncated or error_messages_truncated or message_truncated
+            )
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+            if payload.estimated_tokens <= budget:
+                break
+        while payload.estimated_tokens > budget and (
+            len(payload.failed_tests) > 1 or len(payload.errors) > 1
+        ):
+            if len(payload.failed_tests) >= len(payload.errors) and len(payload.failed_tests) > 1:
+                payload.failed_tests = payload.failed_tests[
+                    : max(1, len(payload.failed_tests) // 2)
+                ]
+            elif len(payload.errors) > 1:
+                payload.errors = payload.errors[: max(1, len(payload.errors) // 2)]
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+        payload.next_cursor = (
+            encode_cursor(offset + len(payload.failed_tests))
+            if offset + len(payload.failed_tests) < len(failed_nodes)
+            else None
+        )
+        payload.page_truncated = payload.next_cursor is not None
+        payload.budget_truncated = True
+        payload.message_truncated = message_truncated
+        payload.truncated = (
+            payload.message_truncated or payload.budget_truncated or payload.page_truncated
+        )
         payload.estimated_tokens = estimate_tokens(payload.model_dump())
     return payload
 
@@ -141,25 +218,52 @@ def _find_test(run: NormalizedRun, selector: str | None) -> NodeRecord:
     raise TestNotFoundError(selector or "<no-tests>")
 
 
-def _first_failed_branch(
+def _branch_severity(
+    branch: list[NodeRecord],
+    messages_lookup: dict[str | None, list[MessageRecord]],
+) -> int:
+    severity = 0
+    for node in branch:
+        if (node.status or "").upper() == "FAIL" and node.message:
+            severity = max(severity, _level_severity("FAIL"))
+        for message in messages_lookup.get(node.id, []):
+            severity = max(severity, _level_severity(message.level))
+    return severity
+
+
+def _best_failed_branch(
     test_node: NodeRecord,
     children: dict[str | None, list[NodeRecord]],
+    messages_lookup: dict[str | None, list[MessageRecord]],
 ) -> list[NodeRecord]:
-    path: list[NodeRecord] = [test_node]
-    current = test_node
-    while True:
-        next_failed = next(
-            (
-                child
-                for child in children.get(current.id, [])
-                if (child.status or "").upper() == "FAIL"
-            ),
-            None,
+    best_branch: list[NodeRecord] | None = None
+    best_score: tuple[int, int, tuple[int, ...]] | None = None
+
+    def score(branch: list[NodeRecord]) -> tuple[int, int, tuple[int, ...]]:
+        return (
+            len(branch),
+            -_branch_severity(branch, messages_lookup),
+            tuple(node.sequence for node in branch),
         )
-        if next_failed is None:
-            return path
-        path.append(next_failed)
-        current = next_failed
+
+    def visit(node: NodeRecord, path: list[NodeRecord]) -> None:
+        nonlocal best_branch, best_score
+        failed_children = [
+            child for child in children.get(node.id, []) if (child.status or "").upper() == "FAIL"
+        ]
+        if not failed_children:
+            branch_score = score(path)
+            if best_score is None or branch_score < best_score:
+                best_branch = list(path)
+                best_score = branch_score
+            return
+        for child in failed_children:
+            path.append(child)
+            visit(child, path)
+            path.pop()
+
+    visit(test_node, [test_node])
+    return best_branch or [test_node]
 
 
 def build_failure_path(
@@ -171,10 +275,11 @@ def build_failure_path(
     children = _children_lookup(run)
     messages_lookup = _messages_by_parent(run)
     test_node = _find_test(run, selector)
-    chain = _first_failed_branch(test_node, children)
+    chain = _best_failed_branch(test_node, children, messages_lookup)
     seen_messages: set[str] = set()
     key_messages: list[dict[str, Any]] = []
-    truncated = False
+    message_truncated = False
+    budget_truncated = False
     for node in chain:
         for message in messages_lookup.get(node.id, []):
             normalized = message.message.strip()
@@ -183,7 +288,7 @@ def build_failure_path(
             seen_messages.add(normalized)
             shortened = truncate_text(message.message, 360)
             if shortened != message.message:
-                truncated = True
+                message_truncated = True
             key_messages.append(
                 {
                     "message_id": message.id,
@@ -195,7 +300,7 @@ def build_failure_path(
     if test_node.message and test_node.message not in seen_messages:
         shortened = truncate_text(test_node.message, 360)
         if shortened != test_node.message:
-            truncated = True
+            message_truncated = True
         key_messages.append(
             {
                 "message_id": f"{test_node.id}-message",
@@ -208,7 +313,10 @@ def build_failure_path(
         input_profile=run.metadata.input_profile,
         run_id=run.run_id,
         estimated_tokens=0,
-        truncated=truncated,
+        truncated=message_truncated or budget_truncated,
+        message_truncated=message_truncated,
+        budget_truncated=budget_truncated,
+        page_truncated=False,
         selected_test_id=test_node.id,
         selected_test_name=test_node.longname or test_node.name,
         failure_chain=[
@@ -225,10 +333,30 @@ def build_failure_path(
     )
     payload.estimated_tokens = estimate_tokens(payload.model_dump())
     if payload.estimated_tokens > budget:
-        payload.truncated = True
-        payload.key_messages = payload.key_messages[:5]
+        for max_chars in (180, 90, 45):
+            message_truncated = (
+                _shrink_messages(payload.key_messages, max_chars) or message_truncated
+            )
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+            if payload.estimated_tokens <= budget:
+                break
+        while payload.estimated_tokens > budget and len(payload.key_messages) > 1:
+            payload.key_messages = payload.key_messages[: max(1, len(payload.key_messages) // 2)]
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+        payload.budget_truncated = True
+        payload.message_truncated = message_truncated
+        payload.truncated = (
+            payload.message_truncated or payload.budget_truncated or payload.page_truncated
+        )
         payload.estimated_tokens = estimate_tokens(payload.model_dump())
     return payload
+
+
+def _find_node(run: NormalizedRun, selector: str) -> NodeRecord:
+    try:
+        return _node_lookup(run)[selector]
+    except KeyError as exc:
+        raise TestNotFoundError(selector) from exc
 
 
 def build_step_window(
@@ -239,9 +367,17 @@ def build_step_window(
     budget: int = DEFAULT_BUDGET,
     page_size: int = DEFAULT_PAGE_SIZE,
 ) -> StepWindowPayload:
-    test_node = _find_test(run, selector)
+    selected_node = _find_node(run, selector)
+    test_node = (
+        selected_node
+        if selected_node.kind == "TEST"
+        else _find_test(run, selected_node.owner_test_id)
+    )
     offset = decode_cursor(cursor)
+    size = _clamp_page_size(page_size, default=DEFAULT_PAGE_SIZE)
     items: list[dict[str, Any]] = []
+    message_truncated = False
+    budget_truncated = False
     for node in sorted(run.nodes, key=lambda item: item.sequence):
         if node.owner_test_id != test_node.id:
             continue
@@ -259,34 +395,69 @@ def build_step_window(
     for message in sorted(run.messages, key=lambda item: item.sequence):
         if message.owner_test_id != test_node.id:
             continue
+        shortened = truncate_text(message.message, 240)
+        if shortened != message.message:
+            message_truncated = True
         items.append(
             {
                 "kind": "message",
                 "message_id": message.id,
                 "level": message.level,
-                "message": truncate_text(message.message, 240),
+                "message": shortened,
                 "sequence": message.sequence,
                 "ref_uri": message.ref_uri,
             }
         )
     items.sort(key=lambda item: item["sequence"])
-    page = items[offset : offset + page_size]
-    next_cursor = encode_cursor(offset + page_size) if offset + page_size < len(items) else None
+    if cursor is None and selected_node.id != test_node.id:
+        selected_index = next(
+            (
+                index
+                for index, item in enumerate(items)
+                if item.get("kind") == "node" and item.get("node_id") == selected_node.id
+            ),
+            0,
+        )
+        offset = max(0, selected_index - size // 2)
+    page = items[offset : offset + size]
+    next_cursor = encode_cursor(offset + size) if offset + size < len(items) else None
+    page_truncated = next_cursor is not None
     payload = StepWindowPayload(
         input_profile=run.metadata.input_profile,
         run_id=run.run_id,
         estimated_tokens=0,
-        truncated=next_cursor is not None,
+        truncated=message_truncated or budget_truncated or page_truncated,
+        message_truncated=message_truncated,
+        budget_truncated=budget_truncated,
+        page_truncated=page_truncated,
         test_id=test_node.id,
         test_name=test_node.longname or test_node.name,
+        selected_node_id=selected_node.id,
+        selected_node_name=selected_node.longname or selected_node.name,
         items=page,
         next_cursor=next_cursor,
     )
     payload.estimated_tokens = estimate_tokens(payload.model_dump())
-    if payload.estimated_tokens > budget and len(payload.items) > 1:
-        payload.truncated = True
-        payload.items = payload.items[: max(1, len(payload.items) // 2)]
-        payload.next_cursor = encode_cursor(offset + len(payload.items))
+    if payload.estimated_tokens > budget:
+        for max_chars in (120, 60, 30):
+            message_truncated = _shrink_messages(payload.items, max_chars) or message_truncated
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+            if payload.estimated_tokens <= budget:
+                break
+        while payload.estimated_tokens > budget and len(payload.items) > 1:
+            payload.items = payload.items[: max(1, len(payload.items) // 2)]
+            payload.estimated_tokens = estimate_tokens(payload.model_dump())
+        payload.next_cursor = (
+            encode_cursor(offset + len(payload.items))
+            if offset + len(payload.items) < len(items)
+            else None
+        )
+        payload.budget_truncated = True
+        payload.page_truncated = payload.next_cursor is not None
+        payload.message_truncated = message_truncated
+        payload.truncated = (
+            payload.message_truncated or payload.budget_truncated or payload.page_truncated
+        )
         payload.estimated_tokens = estimate_tokens(payload.model_dump())
     return payload
 
@@ -304,22 +475,32 @@ def build_search_payload(
         input_profile=run.metadata.input_profile,
         run_id=run.run_id,
         estimated_tokens=0,
-        truncated=has_more,
+        truncated=False,
+        message_truncated=False,
+        budget_truncated=False,
+        page_truncated=has_more,
         query=query,
         level=level,
-        results=[
+        results=[],
+        next_cursor=encode_cursor(offset + len(results)) if has_more else None,
+    )
+    for item in results:
+        shortened = truncate_text(item["message"], 240)
+        if shortened != item["message"]:
+            payload.message_truncated = True
+        payload.results.append(
             {
                 "message_id": item["message_id"],
                 "owner_test_id": item["owner_test_id"],
                 "node_id": item["node_id"],
                 "level": item["level"],
-                "message": truncate_text(item["message"], 240),
+                "message": shortened,
                 "timestamp": item["timestamp"],
                 "ref_uri": item["ref_uri"],
             }
-            for item in results
-        ],
-        next_cursor=encode_cursor(offset + len(results)) if has_more else None,
+        )
+    payload.truncated = (
+        payload.message_truncated or payload.budget_truncated or payload.page_truncated
     )
     payload.estimated_tokens = estimate_tokens(payload.model_dump())
     return payload

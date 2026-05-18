@@ -75,17 +75,24 @@ class RfLogService:
         selector: str | None = None,
         cursor: str | None = None,
         budget: int = DEFAULT_BUDGET,
+        page_size: int | None = None,
     ) -> dict[str, Any]:
         resolved_run_id = self.store.resolve_run_ref(run_id)
         if view not in {"summary", "failure_path", "step_window"}:
             raise InvalidViewError(view)
-        if view != "step_window":
+        cacheable = view == "failure_path"
+        if cacheable:
             cached = self.store.get_cached_view(resolved_run_id, view, selector, budget)
-            if cached is not None:
+            if cached is not None and "message_truncated" in cached:
                 return cached
         run = self.store.get_run(resolved_run_id)
         if view == "summary":
-            payload = build_summary(run, budget=budget).model_dump()
+            payload = build_summary(
+                run,
+                cursor=cursor,
+                budget=budget,
+                page_size=page_size or 10,
+            ).model_dump()
         elif view == "failure_path":
             payload = build_failure_path(run, selector=selector, budget=budget).model_dump()
         else:
@@ -96,9 +103,9 @@ class RfLogService:
                 selector=selector,
                 cursor=cursor,
                 budget=budget,
-                page_size=DEFAULT_PAGE_SIZE,
+                page_size=page_size or DEFAULT_PAGE_SIZE,
             ).model_dump()
-        if view != "step_window":
+        if cacheable:
             self.store.set_cached_view(resolved_run_id, view, selector, budget, payload)
         return payload
 
@@ -203,9 +210,17 @@ def get_view(
     selector: str | None = None,
     cursor: str | None = None,
     budget: int = DEFAULT_BUDGET,
+    page_size: int | None = None,
 ) -> dict[str, Any]:
     try:
-        return SERVICE.get_view(run_id, view=view, selector=selector, cursor=cursor, budget=budget)
+        return SERVICE.get_view(
+            run_id,
+            view=view,
+            selector=selector,
+            cursor=cursor,
+            budget=budget,
+            page_size=page_size,
+        )
     except RfLogMcpError as error:
         LOGGER.warning("get_view failed: %s", error.message)
         return _error_payload(error)

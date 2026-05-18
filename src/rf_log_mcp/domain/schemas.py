@@ -24,6 +24,9 @@ class BasePayload(BaseModel):
     run_id: int
     estimated_tokens: int
     truncated: bool
+    message_truncated: bool = False
+    budget_truncated: bool = False
+    page_truncated: bool = False
 
 
 class ParseResultPayload(BasePayload):
@@ -42,6 +45,7 @@ class SummaryPayload(BasePayload):
     statistics: dict[str, Any]
     failed_tests: list[dict[str, Any]]
     errors: list[dict[str, Any]]
+    next_cursor: str | None = None
 
 
 class FailurePathPayload(BasePayload):
@@ -54,6 +58,8 @@ class FailurePathPayload(BasePayload):
 class StepWindowPayload(BasePayload):
     test_id: str
     test_name: str
+    selected_node_id: str | None = None
+    selected_node_name: str | None = None
     items: list[dict[str, Any]]
     next_cursor: str | None = None
 

@@ -462,9 +462,9 @@ class RunStore:
         sql = """
             SELECT message_id, owner_test_id, node_id, level, message, timestamp, sequence, ref_uri
             FROM messages
-            WHERE run_id = ? AND message LIKE ?
+            WHERE run_id = ? AND message LIKE ? ESCAPE '\\'
         """
-        params: list[Any] = [run_id, f"%{query}%"]
+        params: list[Any] = [run_id, f"%{self._escape_like(query)}%"]
         if level:
             sql += " AND level = ?"
             params.append(level.upper())
@@ -475,6 +475,10 @@ class RunStore:
         has_more = len(rows) > limit
         items = [dict(row) for row in rows[:limit]]
         return items, has_more
+
+    @staticmethod
+    def _escape_like(value: str) -> str:
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
     def _assign_run_identity(self, run: NormalizedRun, run_id: int) -> None:
         run.run_id = run_id
